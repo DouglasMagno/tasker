@@ -1,161 +1,153 @@
 # Distributed Task Scheduler
 
-Este projeto é um protótipo de um escalonador distribuído de tarefas que permite agendar tarefas de execução única e recorrente. As tarefas são executadas (registradas) dentro de 10 segundos do horário agendado. O sistema é construído com backend em Node.js/Express e frontend em React utilizando TypeScript.
+This project is a prototype of a distributed task scheduler that allows scheduling tasks for one-time or recurring execution. Tasks are executed (and logged) within 10 seconds of their scheduled time. The system is built with a backend in Node.js/Express and a frontend in React using TypeScript.
 
-## Funcionalidades
+## Features
 
-- **Tarefas One-Time**: Agende tarefas para execução em um horário específico (formato ISO).
-- **Tarefas Recorrentes**: Agendamento usando sintaxe cron.
-- **Gerenciamento de Tarefas**: Criação, listagem, edição e remoção de tarefas.
-- **Logs de Execução**: Visualize os logs de execução com data/hora e payload.
-- **Projeto Escalável**: Arquitetura simples, preparada para escalabilidade e alta disponibilidade.
+- **One-Time Tasks**: Schedule tasks for execution at a specific time (ISO format).
+- **Recurring Tasks**: Schedule tasks using cron syntax.
+- **Task Management**: Create, list, edit, and delete tasks.
+- **Execution Logs**: View execution logs with timestamps and payload details.
+- **Scalable Project**: A simple architecture designed for scalability and high availability.
 
-## Estrutura do Projeto
-tasker/ <br>
+## Project Structure
+
+```
+tasker/
 ├── api/
-│   ├── Dockerfile<br>
-│   ├── package.json<br>
-│   ├── tsconfig.json<br>
-│   └── src/<br>
-│       ├── @types/<br>
-│           ├── express/<br>
-│           ├──── index.d.ts/<br>
-│       ├── Logs/<br>
-│           ├── services/<br>
-│           ├──── logService/<br>
-│       ├── Worker/<br>
-│           ├── worker.ts/<br>
-│       ├── Task/<br>
-│           ├── controllers/<br>
-│           │   └── taskController.ts<br>
-│           ├── models/<br>
-│           │   └── Task.ts<br>
-│           ├── services/<br>
-│           │   └── taskHandler.ts<br>
-│           │   └── taskScheduler.ts<br>
-│       ├── utils/<br>
-│           └── cronParser.ts<br>
-│       ├── index.ts<br>
-│       ├── app.ts<br>
-│       ├── routes.ts<br>
-├── web/<br>
-│   ├── Dockerfile<br>
-│   ├── package.json<br>
-│   ├── tsconfig.json<br>
-│   ├── public/<br>
-│   │   └── index.html<br>
-│   └── src/<br>
-│       ├── index.tsx<br>
-│       ├── App.tsx<br>
-│       └── components/<br>
-│           ├── TaskForm.tsx<br>
-│           ├── TaskList.tsx<br>
-│           └── ExecutionLog.tsx<br>
-├── design-doc.md<br>
-├── docker-compose.yml<br>
-└── README.md<br>
-
-
-
-## Pré-requisitos
-
-- [Docker](https://www.docker.com/) instalado.
-- [Docker Compose](https://docs.docker.com/compose/) instalado.
-- [Makefile](https://www.gnu.org/software/make/manual/make.html) opcional.
-- [Kubernetes](https://kubernetes.io/) opcional.
-
-## Executando a Aplicação
-- Clone esse repositorio;
-- Crie um arquivo `builder/.env` com o mesmo conteudo do `builder/.env.example`;
-
-**Comandos principais:**
-- Subindo com docker compose
-```bash
-docker compose -f builder/docker/docker-compose.yml --env-file builder/.env up --build
-```
-- Usando comandos Makefile
-```bash
-# inicia aplicação
-make all
-
-# faz build da aplicaçao
-make build
-
-# sobe a aplicacao e acompanha os logs
-up
-
-# sobe a aplicacao de forma -d
-up-silent
-
-# sobe a aplicacao de forma --no-recreate
-up-no-recreate
-
-# remove containers
-down
-
-# entra no container da api
-shell
-
-# acompanha logs
-logs
-
-# executa testes api
-test-api
-
-# executa teste api de um arquivo 
-test-api-file
-
-# executa testes do web
-test-web
-
-# executa teste web de um arquivo 
-test-web-file
-
-# faz carregamento do docker env com o minikube para execucao em k8s
-k8s-load-docker
-
-# desvincula do docker env o minikube para execucao em docker compose
-k8s-unload-docker
-
-# aplica arquivos k8s
-k8s-apply
-
-# retornar pods k8s
-k8s-pods
-
-# conecta local servico web no k8s
-k8s-web-port-forward
-
-# conecta local servico api no k8s
-k8s-api-port-forward
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── src/
+│       ├── @types/
+│       │   └── express/
+│       │       └── index.d.ts
+│       ├── Logs/
+│       │   └── services/
+│       │       └── logService.ts
+│       ├── Worker/
+│       │   └── worker.ts
+│       ├── Task/
+│       │   ├── controllers/
+│       │   │   └── taskController.ts
+│       │   ├── models/
+│       │   │   └── Task.ts
+│       │   └── services/
+│       │       ├── taskHandler.ts
+│       │       └── taskScheduler.ts
+│       ├── utils/
+│       │   └── cronParser.ts
+│       ├── index.ts
+│       ├── app.ts
+│       └── routes.ts
+├── web/
+│   ├── Dockerfile
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── public/
+│   │   └── index.html
+│   └── src/
+│       ├── index.tsx
+│       ├── App.tsx
+│       └── components/
+│           ├── TaskForm.tsx
+│           ├── TaskList.tsx
+│           └── ExecutionLog.tsx
+├── design-doc.md
+├── docker-compose.yml
+└── README.md
 ```
 
-- Usando comandos uteis
-```bash
-# caso nao queira instalar node e outras dependencias na sua maquina mas ainda quer que sua ide consiga interpretar
-# o projeto, basta copiar os node_modules do container apos iniciado
-docker cp tasker-api:app/node_modules api/node_modules
-docker cp tasker-web:app/node_modules web/node_modules
-```
+## Prerequisites
 
-**Usando o projeto:**
-Apos iniciado basta acessar a url do front end e utilizar o agendador
-```bash
-http://localhost:3000
-```
+- [Docker](https://www.docker.com/) installed.
+- [Docker Compose](https://docs.docker.com/compose/) installed.
+- [Makefile](https://www.gnu.org/software/make/manual/make.html) (optional).
+- [Kubernetes](https://kubernetes.io/) (optional).
 
-**Dois handlers configurados:**
-Foram configurados dois handelers simples, um `default` e um `curl`. O `default` apenas printa os logs de execução no
-worker, os tipo `curl` fazem uma chamada get caso o payload da task seja uma url valida. Sugestão de payload:
+## Running the Application
+
+- Clone this repository.
+- Create a file `builder/.env` with the same content as `builder/.env.example`.
+
+**Main Commands:**
+- To bring up the application with Docker Compose:
+  ```bash
+  docker compose -f builder/docker/docker-compose.yml --env-file builder/.env up --build
+  ```
+- Using the Makefile commands:
+  ```bash
+  # start application
+  make all
+
+  # build the application
+  make build
+
+  # bring up the application and follow logs
+  make up
+
+  # bring up the application in detached mode
+  make up-silent
+
+  # bring up the application with --no-recreate
+  make up-no-recreate
+
+  # remove containers
+  make down
+
+  # enter the API container
+  make shell
+
+  # follow logs
+  make logs
+
+  # run API tests
+  make test-api
+
+  # run API tests for a single file
+  make test-api-file
+
+  # run web tests
+  make test-web
+
+  # run web tests for a single file
+  make test-web-file
+
+  # load Docker environment from minikube for Kubernetes deployment
+  make k8s-load-docker
+
+  # unload minikube docker env to use docker compose
+  make k8s-unload-docker
+
+  # apply Kubernetes manifests
+  make k8s-apply
+
+  # list Kubernetes pods
+  make k8s-pods
+
+  # port-forward local web service from Kubernetes
+  make k8s-web-port-forward
+
+  # port-forward local API service from Kubernetes
+  make k8s-api-port-forward
+  ```
+
+- **Using the Project:**
+  After starting the application, simply access the frontend URL:
+  ```bash
+  http://localhost:3000
+  ```
+
+**Two Handlers Configured:**
+Two simple handlers are configured: a `default` and a `curl` handler. The `default` handler only prints the execution logs in the worker, while the `curl` handler makes a GET request if the task payload is a valid URL. Suggested payload example:
 ```bash
 https://ipinfo.io/json
 ```
 
-**Virtualizacao:**
-O projeto pode ser executado com docker ou k8s, para usar instale o minikube, execute o comando `make k8s-load-docker` e 
-depois da vinculação do minikube ao seu docker faça o build e depois rode o comando `make k8s-apply` e veja os pods com
-`k8s-pods`.
+**Virtualization:**
+The project can be executed either with Docker or Kubernetes. To use Kubernetes, install Minikube, run the command `make k8s-load-docker` to bind Minikube to your Docker environment, build the images, then run `make k8s-apply` and check the pods with `make k8s-pods`.
 
-**Pontos importantes:**
-As logicas de negócio foram implementadas nos controllers apenas para simplificar o tempo de desenvolvimento, um 
-refactor aqui será necessário.
+**Important Points:**
+The business logic was implemented in the controllers to expedite development. A refactor will be necessary in the future.
+
+---

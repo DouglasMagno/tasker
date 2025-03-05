@@ -1,50 +1,52 @@
 # Design Document: Distributed Task Scheduler
 
 ## Overview
-Este sistema é um escalonador distribuído de tarefas que permite aos clientes agendar tarefas para execução única ou recorrente (usando sintaxe cron). O protótipo é construído em TypeScript com backend em Node.js/Express e frontend em React. As tarefas são registradas (logadas) após a execução, e podem ser gerenciadas (criação, edição, exclusão) via interface.
+This system is a distributed task scheduler that allows clients to schedule tasks for one-time or recurring execution (using cron syntax). The prototype is built in TypeScript with a backend in Node.js/Express and a frontend in React. Tasks are logged after execution and can be managed (created, edited, deleted) through a user interface.
 
-## Arquitetura do Sistema
-### Componentes
+## System Architecture
+### Components
 1. **Backend API Server**:
-    - **Gerenciamento de Tarefas**: Endpoints REST para criação, atualização, remoção e listagem de tarefas.
-    - **Serviço de Agendamento**: Um serviço que monitora e executa as tarefas usando timers e análise de expressões cron para tarefas recorrentes.
-    - **Registro de Execuções**: Cada execução é logada com timestamp e detalhes do payload.
-    - **Armazenamento em RedisDB**: Para o protótipo, as tarefas e logs são mantidos no RedisDB, sendo necessário uma configuração de volume para persistencia dos dados.).
+   - **Task Management**: REST endpoints for creating, updating, deleting, and listing tasks.
+   - **Scheduling Service**: A service that monitors and executes tasks using timers and cron expression parsing for recurring tasks.
+   - **Execution Logging**: Each execution is logged with a timestamp and payload details.
+   - **Storage in Redis**: For the prototype, tasks and logs are stored in Redis. A volume configuration is required to persist data.
 
 2. **Frontend UI**:
-    - **Formulário de Tarefas**: Permite criar tarefas (one-time e recorrentes).
-    - **Lista de Tarefas**: Exibe as tarefas agendadas, com opções de edição e remoção.
-    - **Visualização dos Logs**: Exibe os registros de execução das tarefas.
-    - Comunica-se com o backend via requisições REST.
+   - **Task Form**: Allows users to create tasks (both one-time and recurring).
+   - **Task List**: Displays the scheduled tasks with options to edit or delete them.
+   - **Log Viewer**: Shows the execution logs of tasks.
+   - The frontend communicates with the backend via REST requests.
 
-### Comunicação
-- **HTTP/REST**: Comunicação entre frontend e backend.
-- **Comunicação Interna**: No protótipo, o agendamento é feito de forma distribuído, filas de mensagens (Bullmq).
+### Communication
+- **HTTP/REST**: Communication between the frontend and backend.
+- **Internal Communication**: In the prototype, scheduling is handled in a distributed manner using message queues (BullMQ).
 
-## Decisões de Design
-1. **Simplicidade e Durabilidade**:
-    - Armazenamento no RedisDB para simplificar o protótipo. Em produção, um banco de dados persistente é importante.
+## Design Decisions
+1. **Simplicity and Durability**:
+   - Using Redis for storage simplifies the prototype. In production, a persistent database would be critical.
 
-2. **Agendamento de Tarefas**:
-    - **One-time**: Agendadas com base em uma data/hora exata.
-    - **Recurring**: Utiliza o pacote cron-parser para calcular a próxima execução.
-    - Após a execução, a tarefa (ou o log) é registrada para consulta.
+2. **Task Scheduling**:
+   - **One-time**: Scheduled based on a specific date/time.
+   - **Recurring**: Uses the cron-parser package to calculate the next execution.
+   - After execution, the task (or its log) is recorded for later reference.
 
-3. **Alta Disponibilidade e Escalabilidade**:
-    - **Backend**: Pode ser escalado horizontalmente com mais replicas.
-    - **Durabilidade**: Em dev, o volume do redis garante que nada será perdido, em produção, o uso de banco de dados persistente e filas de mensagens garantirá que nenhuma tarefa seja perdida.
-    - **Chokepoints**: O serviço de agendamento e execução podem se tornar gargalos e demandar particionamento ou escalonamento distribuído.
+3. **High Availability and Scalability**:
+   - **Backend**: Can be scaled horizontally by increasing replicas.
+   - **Durability**: In development, mounting a volume to Redis ensures that data is not lost. In production, using a persistent database and message queues will guarantee that no tasks are lost.
+   - **Chokepoints**: The scheduling and execution service might become a bottleneck and may require partitioning or distributed scaling.
 
-4. **Custo-Efetividade**:
-    - Design simplificado com componentes mínimos.
-    - Uso de containers (Docker/K8s) para facilitar a orquestração e escalabilidade.
+4. **Cost-Effectiveness**:
+   - A simplified design with minimal components.
+   - Use of containers (Docker/Kubernetes) to facilitate orchestration and scalability.
 
 ## Trade-offs
-- **Armazenamento em Memória vs. Banco de Dados**: O protótipo usa RedisDB para rapidez e simplicidade, mas não é adequado para produção.
-- **Processo Único de Agendamento**: Em cenários de alta carga, um escalonador distribuído ou fila de tarefas seria mais apropriado.
+- **In-Memory Storage vs. Database**: The prototype uses Redis for speed and simplicity, but this approach is not sufficient for production environments.
+- **Single-Process Scheduling**: Under high load, a distributed scheduler or task queue would be more appropriate.
 
-## Futuras Melhorias
-- Integração com um banco de dados durável.
-- Uso de uma fila de mensagens para distribuição de tarefas.
-- Implementação de autenticação e autorização.
-- Aperfeiçoamento da interface do usuário.
+## Future Improvements
+- Integration with a durable database.
+- Use of a message queue for task distribution.
+- Implementation of authentication and authorization.
+- Enhancement of the user interface.
+
+---
