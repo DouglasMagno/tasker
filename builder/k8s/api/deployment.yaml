@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-api-deployment
+  labels:
+    app: tasker-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tasker-api
+  template:
+    metadata:
+      labels:
+        app: tasker-api
+    spec:
+      containers:
+        - name: tasker-api-container
+          image: docker-tasker-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: tasker-api-config

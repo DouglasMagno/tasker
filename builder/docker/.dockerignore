@@ -1,0 +1,21 @@
+# Ignora os diretórios de dependências
+../../api/node_modules/node_modules
+
+# Arquivos de log
+*.log
+npm-debug.log*
+
+# Arquivos e pastas do Git
+.git
+.gitignore
+
+# Arquivos de configuração que não precisam ser enviados para a imagem
+.env
+
+# Diretórios de build (se houver)
+dist/
+build/
+
+# Outros arquivos desnecessários
+docker-compose.yml
+README.md

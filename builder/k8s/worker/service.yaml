@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: tasker-worker-service
+spec:
+  selector:
+    app: tasker-worker
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+      nodePort: 30003
+  type: NodePort

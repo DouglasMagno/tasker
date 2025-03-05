@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tasker-worker-deployment
+  labels:
+    app: tasker-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: tasker-worker
+  template:
+    metadata:
+      labels:
+        app: tasker-worker
+    spec:
+      containers:
+        - name: tasker-worker-container
+          image: docker-tasker-worker:latest
+          command: ["npm", "run", "worker"]
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: tasker-worker-config
